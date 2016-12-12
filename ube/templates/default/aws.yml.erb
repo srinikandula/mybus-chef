@@ -1,0 +1,13 @@
+defaults: &defaults
+  access_key_id: <%= node[:ube][:aws_access_key] %>
+  secret_access_key: <%= node[:ube][:aws_secret_key] %>
+  log_level: debug
+
+development:
+  <<: *defaults
+
+test:
+  <<: *defaults
+
+production:
+  <<: *defaults

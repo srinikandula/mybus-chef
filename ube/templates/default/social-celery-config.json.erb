@@ -1,0 +1,16 @@
+{
+    "rabbitmq": {
+        "username": "<%= @rabbitmq[:username] %>",
+        "password": "<%= @rabbitmq[:password] %>",
+        "host": "<%= @rabbit_host %>",
+        "port": "<%= @rabbitmq[:port] %>"
+    },
+    "social_celery_resource_names": {
+        "outgoing_routing_key_name": "<%= @resource_names[:outgoing_routing_key_name] %>",
+        "incoming_routing_key_name": "<%= @resource_names[:incoming_routing_key_name] %>",
+        "outgoing_queue_name": "<%= @resource_names[:outgoing_queue_name] %>",
+        "incoming_queue_name": "<%= @resource_names[:incoming_queue_name] %>",
+        "exchange_name": "<%= @resource_names[:exchange_name] %>",
+        "incoming_command_exchange_name": "<%= @resource_names[:incoming_command_exchange_name] %>"
+    }
+}

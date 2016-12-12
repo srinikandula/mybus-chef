@@ -1,0 +1,15 @@
+defaults: &defaults
+  project: XXX
+  project_id: 999
+  identity: XXX
+  secret_key: xxx
+  availability_zone: region-a.geo-1
+
+development:
+  <<: *defaults
+
+test:
+  <<: *defaults
+
+production:
+  <<: *defaults

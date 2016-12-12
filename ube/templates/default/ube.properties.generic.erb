@@ -1,0 +1,3 @@
+<% node['ube'].select {|k,v| !v.kind_of?(Hash) && !v.kind_of?(Array)}.keys.sort.each do |k| %><%#
+%><%= "#{k.gsub('_', '.')}=#{node['ube'][k]}" %>
+<% end %>

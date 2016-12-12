@@ -1,0 +1,11 @@
+<%= "mongo.db=#{@mongo_db}" if @mongo_db %>
+<%= "mongo.user=#{@mongo_user}" if @mongo_user %>
+<%= "mongo.password=#{@mongo_password}" if @mongo_password %>
+<%
+    @hosts.each_with_index do |instance, i|
+%>
+<%= "mongo.#{i}.host=#{instance[:host]}" %>
+<%= "mongo.#{i}.port=#{instance[:port]}" %>
+<%
+    end
+%>

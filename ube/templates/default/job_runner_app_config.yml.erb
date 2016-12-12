@@ -1,0 +1,36 @@
+defaults: &defaults
+  callback_queue_method: <%= @callback_queue_method %>
+  box_enabled: <%= @box_enabled %>
+  box_conversion_timeout: <%= @box_conversion_timeout %>
+  box_polling_rate: <%= @box_polling_rate %>
+  box_non_svg: <%= @box_non_svg %>
+  crocodoc_enabled: <%= @crocodoc_enabled %>
+  crocodoc_pdf_enabled: <%= @crocodoc_pdf_enabled %>
+  crocodoc_conversion_timeout: <%= @crocodoc_conversion_timeout %>
+  crocodoc_polling_rate: <%= @crocodoc_polling_rate %>
+  dashboard_username: <%= @dashboard_username %>
+  dashboard_password: <%= @dashboard_password %>
+  dropbox_consumer_key: <%= @dropbox_consumer_key %>
+  dropbox_consumer_secret: <%= @dropbox_consumer_secret %>
+  object_store_method: <%= @object_store_method %>
+  temp_dropbox_download_path: /tmp/dropbox-downloads
+  temp_gmail_download_path: /tmp/gmail-downloads
+  temp_s3_download_path: /tmp/s3-downloads
+  temp_url_download_path: /tmp/url-downloads
+  temp_hp_cloud_download_path: /tmp/hpcloud-downloads
+  temp_box_zip_download_path: /tmp/box-asset-downloads
+  job_runner_host: <%= @job_runner_host %>
+  job_runner_port: <%= @job_runner_port %>
+  max_request_retries: <%= @max_request_retries %>
+  jaspersoft_host_url: <%= @jaspersoft_host_url %>
+  jaspersoft_superuser_name: <%= @jaspersoft_superuser_name %>
+  jaspersoft_superuser_password: <%= @jaspersoft_superuser_password %>
+
+development:
+  <<: *defaults
+
+test:
+  <<: *defaults
+
+production:
+  <<: *defaults

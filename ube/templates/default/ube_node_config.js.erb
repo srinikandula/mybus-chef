@@ -1,0 +1,5 @@
+{
+	"web.port": <%= node[:ube][:nodejs_web_port] %>,
+	"redis.host": "<%= @redis_host || node[:ube][:redis_host] %>",
+	"redis.port": <%= @redis_port || node[:ube][:redis_port] %>
+}

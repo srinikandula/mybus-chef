@@ -1,0 +1,21 @@
+{
+  "name": "hpsn-monitoring",
+  "version": "1.0.0",
+  "description": "Monitor HPSN Servers",
+  "main": "index.js",
+  "scripts": {
+    "TEAMCITY_REPORTER_test": "./node_modules/.bin/mocha --reporter mocha-teamcity-reporter",
+    "test": "./node_modules/.bin/mocha --reporter spec"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chai": "^3.2.0",
+    "mocha": "^2.2.5",
+    "request": "^2.61.0",
+    "simple-ssh": "^0.8.6"
+  },
+  "devDependencies": {
+    "mocha-teamcity-reporter": ">=0.0.1"
+  }
+}

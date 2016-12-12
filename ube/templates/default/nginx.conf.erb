@@ -1,0 +1,175 @@
+user www-data;
+worker_processes 4;
+pid /var/run/nginx.pid;
+
+events {
+	worker_connections 768;
+	# multi_accept on;
+}
+
+
+http {
+
+	##
+	# Basic Settings
+	##
+
+    # Allow large uploads
+    client_max_body_size <%= (node[:ube][:max_upload_size_bytes].to_i rescue 0) > 0 ? "#{node[:ube][:max_upload_size_bytes].to_i / (1024*1024)}m" : '150M' %>;
+
+	sendfile on;
+	tcp_nopush on;
+	tcp_nodelay on;
+	keepalive_timeout 65;
+	types_hash_max_size 2048;
+	# server_tokens off;
+
+	# server_names_hash_bucket_size 64;
+	# server_name_in_redirect off;
+
+	include /etc/nginx/mime.types;
+	default_type application/octet-stream;
+
+	##
+	# Logging Settings
+	##
+
+	access_log /var/log/nginx/access.log;
+	error_log /var/log/nginx/error.log;
+
+	##
+	# Gzip Settings
+	##
+
+	gzip on;
+	gzip_disable "msie6";
+
+	# gzip_vary on;
+	# gzip_proxied any;
+	# gzip_comp_level 6;
+	# gzip_buffers 16 8k;
+	# gzip_http_version 1.1;
+    gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript;
+
+	##
+	# nginx-naxsi config
+	##
+	# Uncomment it if you installed nginx-naxsi
+	##
+
+	#include /etc/nginx/naxsi_core.rules;
+
+	##
+	# nginx-passenger config
+	##
+	# Uncomment it if you installed nginx-passenger
+	##
+
+	#passenger_root /usr;
+	#passenger_ruby /usr/bin/ruby;
+
+	##
+	# Virtual Host Configs
+	##
+
+	include /etc/nginx/conf.d/*.conf;
+    #include /etc/nginx/sites-enabled/*;
+
+    #######################################################
+
+    <% if !node[:ube][:subdomains_that_route_to_portal].empty? %>
+
+    server {
+        listen <%= node[:ube][:nginx_portal_checker_port] %>;
+        server_name <%= node[:ube][:subdomains_that_route_to_portal].join(' ') %>;
+        location = / {
+             proxy_pass http://127.0.0.1:8080/<%= node[:ube][:portal_subdomain_proxypass_path].to_s[/\/?(.+)/, 1] %>;
+             proxy_set_header    Host            $host;
+             proxy_set_header    X-Real-IP       $remote_addr;
+             proxy_set_header    X-Forwarded-for $remote_addr;
+         }
+        location / {
+            proxy_pass http://127.0.0.1:8080;
+            proxy_set_header    Host            $host;
+            proxy_set_header    X-Real-IP       $remote_addr;
+            proxy_set_header    X-Forwarded-for $remote_addr;
+        }
+    }
+    <%
+    end
+    %>
+
+    server {
+       listen <%= node[:ube][:nginx_portal_checker_port] %> default_server;
+        <% unless node[:ube][:deploy_hp_static_content].to_s.empty? %>
+        location /uisupport {
+            rewrite ^([^.]*[^/])$ https://$host/uisupport/ permanent;
+            alias /mnt/HPSN-Library/;
+            autoindex on;
+            proxy_set_header    Host            $host;
+            proxy_set_header    X-Real-IP       $remote_addr;
+            proxy_set_header    X-Forwarded-for $remote_addr;
+        }
+        <% unless node[:ube][:hp_mobile_apps_location].to_s.strip.empty? %>
+        location /apps{
+            rewrite ^ <%=node[:ube][:hp_mobile_apps_location]%>$request_uri? permanent;
+        }
+        <% end %>
+        <%end%>
+       location / {
+            proxy_pass http://127.0.0.1:8080;
+            proxy_set_header    Host            $host;
+            proxy_set_header    X-Real-IP       $remote_addr;
+            proxy_set_header    X-Forwarded-for $remote_addr;
+       }
+    }
+
+    server {
+        listen 9091;
+        location = / {
+            proxy_pass http://127.0.0.1:8080/<%= node[:ube][:portal_subdomain_proxypass_path].to_s[/\/?(.+)/, 1] %>;
+            proxy_set_header    Host            $host;
+            proxy_set_header    X-Real-IP       $remote_addr;
+            proxy_set_header    X-Forwarded-for $remote_addr;
+        }
+
+        location / {
+            proxy_pass http://127.0.0.1:8080;
+            proxy_set_header    Host            $host;
+            proxy_set_header    X-Real-IP       $remote_addr;
+            proxy_set_header    X-Forwarded-for $remote_addr;
+       }
+    }
+
+    <% @ports_to_redirect_to_https.each do |port| %>
+    # redirect all incoming requests to SSL (which for the UBE is handled by AWS ELB)
+    server {
+        listen <%= port %>;
+        # the line below works on prod but not on staging
+        #return 301 https://$host$request_uri;
+
+        # the line below works on staging.  not tested on prod.
+        rewrite ^ https://$host$request_uri? permanent;
+    }
+    <% end %>
+
+
+
+    <% unless node[:ube][:http_nginx_passthru_port].to_s.empty? %>
+    server {
+       listen <%= node[:ube][:http_nginx_passthru_port] %>;
+       location / {
+             proxy_pass http://127.0.0.1:8080;
+             proxy_set_header    Host            $host;
+             proxy_set_header    X-Real-IP       $remote_addr;
+             proxy_set_header    X-Forwarded-for $remote_addr;
+        }
+    }
+    <% end %>
+}
+
+
+
+
+
+
